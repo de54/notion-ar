@@ -5,11 +5,6 @@
   text-align: start !important;
 }
 
-.notion-quote-block > div > div {
-  border-left: none !important;
-  border-inline-start: 3px solid currentcolor !important;
-}
-
 .notion-callout-block div {
   margin: 0 !important;
 }
