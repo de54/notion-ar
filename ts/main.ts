@@ -1,199 +1,126 @@
-// page info
-const topBarNavigation =
-  ".notion-topbar .notion-focusable .notranslate:not([role='button'])";
-const pageTitle = "[placeholder='Untitled']";
-const pageBackground = ".whenContentEditable > .pseudoSelection:first-of-type";
-const pageIconAndControlsContainer =
-  ".pseudoSelection:not(.whenContentEditable > *)";
-
-// page content
-const contentContainer = ".notion-page-content";
-const textBlock = ".notion-text-block";
-const todoBlock = ".notion-to_do-block";
-const bulletedListBlock = ".notion-bulleted_list-block";
-const numberedListBlock = ".notion-numbered_list-block";
-const headerBlocks =
-  ".notion-header-block, .notion-sub_header-block, .notion-sub_sub_header-block";
-const toggleListBlock = ".notion-toggle-block";
-const quoteBlock = ".notion-quote-block";
-const calloutBlock = ".notion-callout-block";
-const tableOfContentsBlock = ".notion-table_of_contents-block";
-const imageBlock = ".notion-image-block";
-const videoBlock = ".notion-video-block";
-const audioBlock = ".notion-audio-block";
-const fileBlock = ".notion-file-block";
-const embedBlock = ".notion-embed-block";
-const bookmarkBlock = ".notion-bookmark-block";
-const captionBlockSelector = "[placeholder^='Write a caption']";
-const columnsListBlock = ".notion-column_list-block";
-const columnBlock = ".notion-column-block";
-
-const autoDirElementsSelectors = `${topBarNavigation}, ${pageTitle}, ${textBlock}, ${todoBlock}, ${bulletedListBlock}, ${numberedListBlock}, ${headerBlocks}, ${toggleListBlock}, ${quoteBlock}, ${calloutBlock}, ${tableOfContentsBlock}, ${imageBlock} ${captionBlockSelector}, ${videoBlock} ${captionBlockSelector}, ${audioBlock} ${captionBlockSelector}, ${fileBlock} ${captionBlockSelector}, ${embedBlock} ${captionBlockSelector}, ${bookmarkBlock} ${captionBlockSelector}`;
-
-/* Activate App */
-let { pathname } = window.location;
-window.addEventListener("load", active);
-setInterval(() => {
-  const newPathname = window.location.pathname;
-  if (newPathname !== pathname) {
-    pathname = newPathname;
-    active();
-  }
-}, 1000);
+"use strict";
+const
+    topBarNavigation = ".notion-topbar .notion-focusable .notranslate:not([role='button'])",
+    pageTitle = "[placeholder='Untitled']",
+    pageBackground = ".whenContentEditable > .pseudoSelection:first-of-type",
+    pageIconAndControlsContainer = ".pseudoSelection:not(.whenContentEditable > *)",
+    contentContainer = ".notion-page-content",
+    textBlock = ".notion-text-block",
+    todoBlock = ".notion-to_do-block",
+    bulletedListBlock = ".notion-bulleted_list-block",
+    numberedListBlock = ".notion-numbered_list-block",
+    headerBlocks = ".notion-header-block, .notion-sub_header-block, .notion-sub_sub_header-block",
+    toggleListBlock = ".notion-toggle-block",
+    quoteBlock = ".notion-quote-block",
+    calloutBlock = ".notion-callout-block",
+    tableOfContentsBlock = ".notion-table_of_contents-block",
+    imageBlock = ".notion-image-block",
+    videoBlock = ".notion-video-block",
+    audioBlock = ".notion-audio-block",
+    fileBlock = ".notion-file-block",
+    embedBlock = ".notion-embed-block",
+    bookmarkBlock = ".notion-bookmark-block",
+    captionBlockSelector = "[placeholder^='Write a caption']",
+    columnsListBlock = ".notion-column_list-block",
+    columnBlock = ".notion-column-block",
+    autoDirElementsSelectors = `.notion-topbar .notion-focusable .notranslate:not([role='button']), [placeholder='Untitled'], ${textBlock}, ${todoBlock}, ${bulletedListBlock}, ${numberedListBlock}, .notion-header-block, .notion-sub_header-block, .notion-sub_sub_header-block, .notion-toggle-block, .notion-quote-block, .notion-callout-block, ${tableOfContentsBlock}, ${imageBlock} ${captionBlockSelector}, ${videoBlock} ${captionBlockSelector}, ${audioBlock} ${captionBlockSelector}, ${fileBlock} ${captionBlockSelector}, ${embedBlock} ${captionBlockSelector}, ${bookmarkBlock} ${captionBlockSelector}`;
+let {pathname: a} = window.location;
 
 function active() {
-  const interval = setInterval(async () => {
-    // when page content is loaded
-    if (document.querySelector(contentContainer)) {
-      clearInterval(interval);
-      await wait(500);
-      main();
-    }
-  }, 1000);
+    let a = setInterval(async () => {
+        document.querySelector(contentContainer) && (clearInterval(a), await wait(500), main())
+    }, 1e3)
 }
 
-/* Main */
 function main() {
-  if (startsWithAR(document.title)) {
-    document.querySelector(pageBackground)?.classList.add("rtl");
-    document.querySelector(pageIconAndControlsContainer)?.classList.add("rtl");
-  }
-
-  document.querySelectorAll(autoDirElementsSelectors).forEach((ele) => {
-    ele.setAttribute("dir", "auto");
-
-    // table of contents
-    if (ele.matches(tableOfContentsBlock)) {
-      const blocks = <NodeListOf<HTMLElement>>(
-        ele.querySelectorAll("a [role='button'] > div")
-      );
-
-      blocks.forEach((block) => {
-        block.style.marginInlineStart = block.style.marginLeft;
-        block.style.marginLeft = "";
-      });
-    }
-  });
-
-  // handle content mutations
-  const mutationObserver = new MutationObserver((records) => {
-    records.forEach((record) => {
-      if ((record.target as HTMLElement).tagName === "TITLE") {
-        const text = record.addedNodes[0].textContent ?? "";
-        const pageBackgroundBlock = document.querySelector(pageBackground);
-        const pageIconBlock = document.querySelector(
-          pageIconAndControlsContainer
-        );
-
-        if (startsWithAR(text)) {
-          pageBackgroundBlock?.classList.add("rtl");
-          pageIconBlock?.classList.add("rtl");
-        } else {
-          pageBackgroundBlock?.classList.remove("rtl");
-          pageIconBlock?.classList.remove("rtl");
+    startsWithAR(document.title) && (document.querySelector(pageBackground)?.classList.add("rtl"), document.querySelector(pageIconAndControlsContainer)?.classList.add("rtl")), document.querySelectorAll(autoDirElementsSelectors).forEach(a => {
+        if (a.setAttribute("dir", "auto"), a.matches(tableOfContentsBlock)) {
+            let b = a.querySelectorAll("a [role='button'] > div");
+            b.forEach(a => {
+                a.style.marginInlineStart = a.style.marginLeft, a.style.marginLeft = ""
+            })
         }
-      }
-
-      if (record.type === "childList" && record.addedNodes.length) {
-        record.addedNodes.forEach((node) => {
-          if (node.nodeType !== Node.ELEMENT_NODE) return;
-
-          let block = <HTMLElement>node;
-          const isColumnsList = block.matches(columnsListBlock);
-          const columnBlocks = block.querySelectorAll(columnBlock);
-
-          for (let i = 0; i < (isColumnsList ? columnBlocks.length : 1); i++) {
-            if (isColumnsList)
-              block = <HTMLElement>columnBlocks.item(i).firstElementChild;
-
-            // new 'auto dir' element
-            if (
-              autoDirElementsSelectors
-                .split(",")
-                .some((selector) => block.matches(selector))
-            ) {
-              block.setAttribute("dir", "auto");
-            }
-
-            // captions
-            if (
-              block.matches(
-                `${imageBlock}, ${videoBlock}, ${audioBlock}, ${fileBlock}, ${embedBlock}, ${bookmarkBlock}`
-              )
-            ) {
-              const captionBlock = block.querySelector(captionBlockSelector);
-
-              if (captionBlock) (<HTMLElement>captionBlock).dir = "auto";
-            }
-
-            // rtl suggestion
-            const previousSibling = <HTMLElement>record.previousSibling;
-            if (
-              previousSibling &&
-              ((block.matches(todoBlock) &&
-                previousSibling.matches(todoBlock)) ||
-                (block.matches(bulletedListBlock) &&
-                  previousSibling.matches(bulletedListBlock)) ||
-                (block.matches(numberedListBlock) &&
-                  previousSibling.matches(numberedListBlock)) ||
-                (block.matches(textBlock) &&
-                  previousSibling.matches(textBlock)))
-            ) {
-              const innertextBlock = (<HTMLElement>(
-                previousSibling.querySelector(
-                  "[placeholder]:not([placeholder='']"
-                )
-              ))!;
-
-              if (startsWithAR(innertextBlock.innerText)) block.dir = "rtl";
-            }
-
-            // table of contents
-            if (block.matches(`${tableOfContentsBlock} div div`)) {
-              const rowBlock = <HTMLElement>(
-                block.querySelector("a [role='button'] > div")
-              );
-
-              rowBlock.style.marginInlineStart = rowBlock.style.marginLeft;
-              rowBlock.style.marginLeft = "";
-            }
-          }
-        });
-      } else if (record.type === "characterData") {
-        // reset direction to auto (remove rtl suggestion)
-        const block = <HTMLElement>(
-          (record.target.parentElement?.closest(todoBlock) ??
-            record.target.parentElement?.closest(bulletedListBlock) ??
-            record.target.parentElement?.closest(numberedListBlock) ??
-            record.target.parentElement?.closest(textBlock))
-        );
-
-        if (
-          record.target.textContent?.trim() &&
-          !startsWithAR(record.target.textContent) &&
-          block?.dir === "rtl"
-        )
-          block.dir = "auto";
-      }
     });
-  });
 
-  mutationObserver.observe(document.querySelector(contentContainer)!, {
-    childList: true,
-    characterData: true,
-    subtree: true,
-  });
+    document.querySelectorAll('.notion-quote-block').forEach(processQuoteBlock);
 
-  mutationObserver.observe(document.querySelector("title")!, {
-    childList: true,
-  });
+    let a = new MutationObserver(a => {
+        a.forEach(a => {
+            if ("TITLE" === a.target.tagName) {
+                let e = a.addedNodes[0].textContent ?? "", b = document.querySelector(pageBackground),
+                    c = document.querySelector(pageIconAndControlsContainer);
+                startsWithAR(e) ? (b?.classList.add("rtl"), c?.classList.add("rtl")) : (b?.classList.remove("rtl"), c?.classList.remove("rtl"))
+            }
+            if ("childList" === a.type && a.addedNodes.length) a.addedNodes.forEach(f => {
+                if (f.nodeType !== Node.ELEMENT_NODE) return;
+                let b = f, g = b.matches(".notion-column_list-block"), h = b.querySelectorAll(".notion-column-block");
+                for (let d = 0; d < (g ? h.length : 1); d++) {
+                    if (g && (b = h.item(d).firstElementChild), autoDirElementsSelectors.split(",").some(a => b.matches(a)) && b.setAttribute("dir", "auto"), b.matches(`${imageBlock}, ${videoBlock}, ${audioBlock}, ${fileBlock}, ${embedBlock}, ${bookmarkBlock}`)) {
+                        let i = b.querySelector(captionBlockSelector);
+                        i && (i.dir = "auto")
+                    }
+                    let c = a.previousSibling;
+                    if (c && (b.matches(todoBlock) && c.matches(todoBlock) || b.matches(bulletedListBlock) && c.matches(bulletedListBlock) || b.matches(numberedListBlock) && c.matches(numberedListBlock) || b.matches(textBlock) && c.matches(textBlock))) {
+                        let j = c.querySelector("[placeholder]:not([placeholder='']");
+                        startsWithAR(j.innerText) && (b.dir = "rtl")
+                    }
+                    if (b.matches(`${tableOfContentsBlock} div div`)) {
+                        let e = b.querySelector("a [role='button'] > div");
+                        e.style.marginInlineStart = e.style.marginLeft, e.style.marginLeft = ""
+                    }
+                }
+
+                // Process notion-quote-block when nodes are added
+                if (b.matches('.notion-quote-block')) {
+                    processQuoteBlock(b);
+                } else {
+                    let quoteBlocks = b.querySelectorAll('.notion-quote-block');
+                    quoteBlocks.forEach(processQuoteBlock);
+                }
+
+            }); else if ("characterData" === a.type) {
+                let d = ((a.target.parentElement?.closest(todoBlock) ?? a.target.parentElement?.closest(bulletedListBlock)) ?? a.target.parentElement?.closest(numberedListBlock)) ?? a.target.parentElement?.closest(textBlock);
+                a.target.textContent?.trim() && !startsWithAR(a.target.textContent) && d?.dir === "rtl" && (d.dir = "auto");
+
+                let quoteBlock = a.target.parentElement?.closest('.notion-quote-block');
+                if (quoteBlock) {
+                    processQuoteBlock(quoteBlock);
+                }
+            }
+        })
+    });
+    a.observe(document.querySelector(contentContainer), {
+        childList: !0,
+        characterData: !0,
+        subtree: !0
+    }), a.observe(document.querySelector("title"), {childList: !0})
 }
 
-// utility
-function startsWithAR(string: string) {
-  return /^[\u0621-\u064A]/.test(string);
+function processQuoteBlock(block) {
+    let textContent = block.innerText || block.textContent || '';
+    let isRTL = startsWithAR(textContent.trim());
+    let divElement = block.querySelector('blockquote > div');
+
+    if (divElement) {
+        if (isRTL) {
+            divElement.style.borderLeft = 'none';
+            divElement.style.borderRight = '3px solid currentColor';
+        } else {
+            divElement.style.borderRight = 'none';
+            divElement.style.borderLeft = '3px solid currentColor';
+        }
+    }
 }
 
-function wait(time: number) {
-  return new Promise((resolve) => setTimeout(resolve, time));
+function startsWithAR(a) {
+    return /^[\u0621-\u064A]/.test(a)
 }
+
+function wait(a) {
+    return new Promise(b => setTimeout(b, a))
+}
+
+window.addEventListener("load", active), setInterval(() => {
+    let b = window.location.pathname;
+    b !== a && (a = b, active())
+}, 1e3)
